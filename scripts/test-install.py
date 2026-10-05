@@ -29,7 +29,8 @@ assert name in [os.environ['TEST_ARCHIVE'],'checksums.txt']
 source=pathlib.Path(os.environ['TEST_RELEASE'])/name
 shutil.copyfile(source,dest)
 if name=='checksums.txt' and os.environ.get('TEST_BAD_CHECKSUM'):
- data=dest.read_text();dest.write_text(data.replace(data.split()[0],'0'*64,1))
+ lines=dest.read_text().splitlines()
+ dest.write_text(chr(10).join(('0'*64+'  '+os.environ['TEST_ARCHIVE']) if line.split()[1]==os.environ['TEST_ARCHIVE'] else line for line in lines)+chr(10))
 ''')
     curl.chmod(0o755)
     env = {**os.environ, "PATH": str(mock_bin) + os.pathsep + os.environ["PATH"], "LETSGEN_VERSION": version,
