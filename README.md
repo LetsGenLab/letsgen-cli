@@ -97,10 +97,14 @@ python3 scripts/release.py v0.1.0
 ```
 
 This builds macOS/Linux/Windows amd64 and arm64 archives, `checksums.txt`, and
-`source.txt` locally. It does not create GitHub Actions, tags, releases or push
-anything. After review, create the public repository with this source, select
-an open-source license, tag the reviewed commit, and upload the archives plus
-checksum/source files to the matching GitHub release.
+`source.txt` locally. The script never tags, pushes or publishes anything.
+Development defaults to `develop`. GitHub CI checks pushes and PRs against
+`develop` and `main`. After review, merge the approved version into `main` and
+push a semver tag such as `v0.1.0` on that commit. The release workflow verifies
+that the tagged commit belongs to `main`, runs tests, builds all six archives,
+checks their contents/checksums, and publishes a GitHub release with installers.
+Prerelease tags produce prereleases. Pushing a branch without a tag runs CI
+without publishing. Select the source license before the first public release.
 
 After publication, download and inspect `install.sh` (macOS/Linux) or
 `install.ps1` (Windows) from the reviewed tag. Both fetch version-pinned GitHub

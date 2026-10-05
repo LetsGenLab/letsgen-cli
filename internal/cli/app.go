@@ -72,6 +72,10 @@ func Main(ctx context.Context, args []string, in io.Reader, out, errOut io.Write
 			origin = strings.TrimPrefix(args[i], "--origin=")
 		default:
 			filtered = append(filtered, args[i])
+			if takesValue(args[i]) && i+1 < len(args) {
+				i++
+				filtered = append(filtered, args[i])
+			}
 		}
 	}
 	if len(filtered) == 0 || filtered[0] == "help" || filtered[0] == "--help" || filtered[0] == "-h" {
@@ -159,4 +163,12 @@ func (a *app) needAuth() error {
 		return &exitError{3, "sign in with letsgen auth login or set LETSGEN_API_KEY"}
 	}
 	return nil
+}
+
+func takesValue(option string) bool {
+	switch option {
+	case "--model", "--prompt", "--parameters", "--reference", "--max-gems", "--request-id", "--timeout", "--output", "--mime", "--scope", "--language", "--page", "--target", "--path", "--monthly-gem-cap":
+		return true
+	}
+	return false
 }
