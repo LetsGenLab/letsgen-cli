@@ -5,9 +5,9 @@ description: Use the Lets Gen CLI to discover models, upload references, generat
 
 # Lets Gen CLI v0.1
 
-Run `letsgen help` first. This preview defaults to production. An explicit
-`--origin https://letsgen.app` selects production; never change environments
-without user authorization. Credentials are isolated by origin.
+Run `letsgen help` first. The CLI connects to `https://letsgen.app` by
+default. Credentials are isolated by origin. Alternate API origins require
+explicit user authorization.
 
 Use `letsgen --json models list --kind image` and `models inspect MODEL`
 before choosing settings. Capabilities and availability come from the server;

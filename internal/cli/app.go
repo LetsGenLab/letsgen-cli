@@ -39,7 +39,7 @@ letsgen [--origin URL] [--json] COMMAND
   version
 
 LETSGEN_API_KEY overrides saved credentials. Never pass a key as an argument.
-LETSGEN_API_ORIGIN defaults to https://letsgen.app in this preview.
+LETSGEN_API_ORIGIN defaults to https://letsgen.app.
 Global --json and --origin are accepted anywhere; diagnostics use stderr.
 Exit codes: 0 success, 1 failure, 2 usage, 3 auth, 4 timeout, 5 task failure.
 `

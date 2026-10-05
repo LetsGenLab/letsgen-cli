@@ -12,7 +12,9 @@
   build all six platform archives and run the archive and installer checks.
 - Never put credentials in tracked files, commit messages, logs, or command
   arguments. Browser login creates a revocable 30-day personal API key.
-- The preview defaults to production. Production actions and paid generation
-  require explicit user authorization; a release does not grant either.
+- The CLI defaults to https://letsgen.app. Never publish internal test hostnames
+  in source, history, documentation, release material, or artifacts. Internal
+  test origins belong in private environment configuration only. Paid generation
+  and backend production deployments require explicit user authorization.
 - Stop task-owned callback listeners, servers, test processes, and browser
   sessions when finished. Remove temporary credentials and revoke test keys.

@@ -6,8 +6,10 @@ Describe what you want, pick a model, and get the result as a link or a file
 saved to your computer. Install one executable and sign in through your
 browser. No Go, Python, Node.js, or API key to copy and paste.
 
-**Preview:** v0.1.0-alpha.1 uses
-[letsgen.app](https://letsgen.app). You need production access.
+The CLI connects to [letsgen.app](https://letsgen.app) by default.
+
+Release downloads are not available yet. The installation instructions below
+are for the upcoming first release.
 
 ```sh
 letsgen auth login
@@ -128,7 +130,7 @@ be able to reach this terminal's loopback address.
 
 ## Generating images, video, and audio
 
-Generation spends real Gems, including in production. Set `--max-gems` to the
+Generation spends real Gems. Set `--max-gems` to the
 most you want to spend on each request. Your monthly key limit also applies.
 
 ```sh

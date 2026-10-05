@@ -14,9 +14,12 @@ go build -trimpath -ldflags '-s -w' -o bin/letsgen ./cmd/letsgen
 ./bin/letsgen help
 ```
 
-The preview defaults to production. Browser login requires access to the hosted
-production consent page. Use read-only access or a zero-Gem cap for checks that
-do not need generation. Paid generation requires separate authorization.
+The CLI defaults to production. For internal tests, set `LETSGEN_API_ORIGIN`
+in private environment configuration or pass an explicitly approved
+`--origin`. Do not publish internal test hostnames. Use read-only access or a
+zero-Gem cap for checks without generation. Paid generation requires separate
+authorization. Browser login requires the CLI login routes to be deployed in
+the selected environment.
 
 ## Validate
 
