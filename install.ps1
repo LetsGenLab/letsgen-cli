@@ -20,10 +20,11 @@ try {
   Add-Type -AssemblyName System.IO.Compression.FileSystem
   $zip = [IO.Compression.ZipFile]::OpenRead((Join-Path $temp $archive))
   try {
-    if ($zip.Entries.Count -ne 1 -or $zip.Entries[0].FullName -ne 'letsgen.exe') { throw 'Unexpected archive contents' }
+    if ($zip.Entries.Count -ne 2 -or $zip.Entries[0].FullName -ne 'letsgen.exe' -or $zip.Entries[1].FullName -ne 'LICENSE') { throw 'Unexpected archive contents' }
   } finally { $zip.Dispose() }
   Expand-Archive -LiteralPath (Join-Path $temp $archive) -DestinationPath (Join-Path $temp 'unpacked')
   New-Item -ItemType Directory -Path $InstallDir -Force | Out-Null
   Copy-Item -LiteralPath (Join-Path $temp 'unpacked\letsgen.exe') -Destination (Join-Path $InstallDir 'letsgen.exe') -Force
+  Copy-Item -LiteralPath (Join-Path $temp 'unpacked\LICENSE') -Destination (Join-Path $InstallDir 'letsgen.LICENSE') -Force
   Write-Output "Installed $Version to $InstallDir. Add it to PATH, then run: letsgen auth login"
 } finally { Remove-Item -LiteralPath $temp -Recurse -Force }

@@ -18,10 +18,12 @@ case "$expected" in ''|*[!a-f0-9]*) echo 'Missing or invalid release checksum' >
 [ "${#expected}" -eq 64 ] || { echo 'Invalid checksum length' >&2; exit 1; }
 if command -v sha256sum >/dev/null 2>&1; then actual=$(sha256sum "$tmp/$archive" | awk '{print $1}'); else actual=$(shasum -a 256 "$tmp/$archive" | awk '{print $1}'); fi
 [ "$actual" = "$expected" ] || { echo 'Checksum mismatch' >&2; exit 1; }
-[ "$(tar -tzf "$tmp/$archive")" = letsgen ] || { echo 'Unexpected archive contents' >&2; exit 1; }
+[ "$(tar -tzf "$tmp/$archive")" = "$(printf 'letsgen\nLICENSE')" ] || { echo 'Unexpected archive contents' >&2; exit 1; }
 tar -xzf "$tmp/$archive" -C "$tmp"
 [ -f "$tmp/letsgen" ] && [ ! -L "$tmp/letsgen" ] || { echo 'Invalid executable' >&2; exit 1; }
+[ -f "$tmp/LICENSE" ] && [ ! -L "$tmp/LICENSE" ] || { echo 'Invalid license' >&2; exit 1; }
 mkdir -p "$install_dir"
 install -m 755 "$tmp/letsgen" "$install_dir/letsgen"
+install -m 644 "$tmp/LICENSE" "$install_dir/letsgen.LICENSE"
 echo "Installed $version to $install_dir/letsgen"
 echo "Add $install_dir to PATH, then run: letsgen auth login"

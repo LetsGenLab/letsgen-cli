@@ -22,6 +22,7 @@ root = Path(__file__).resolve().parents[1]
 dest = (root / args.output / args.version).resolve()
 dest.mkdir(parents=True, exist_ok=True)
 sha = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()
+license_data = (root / "LICENSE").read_bytes()
 checksums = []
 for target in args.target or ["darwin/arm64", "darwin/amd64", "linux/arm64", "linux/amd64", "windows/arm64", "windows/amd64"]:
     goos, arch = target.split("/")
@@ -33,14 +34,16 @@ for target in args.target or ["darwin/arm64", "darwin/amd64", "linux/arm64", "li
     archive = dest / f"letsgen_{args.version}_{goos}_{arch}.{'zip' if goos == 'windows' else 'tar.gz'}"
     if goos == "windows":
         with zipfile.ZipFile(archive, "w", compression=zipfile.ZIP_DEFLATED) as z:
-            info = zipfile.ZipInfo(name, date_time=(2020, 1, 1, 0, 0, 0))
-            info.compress_type = zipfile.ZIP_DEFLATED
-            z.writestr(info, data)
+            for filename, content in [(name, data), ("LICENSE", license_data)]:
+                info = zipfile.ZipInfo(filename, date_time=(2020, 1, 1, 0, 0, 0))
+                info.compress_type = zipfile.ZIP_DEFLATED
+                z.writestr(info, content)
     else:
         with archive.open("wb") as out, gzip.GzipFile(filename="", mode="wb", fileobj=out, mtime=0) as gz, tarfile.open(fileobj=gz, mode="w") as tar:
-            info = tarfile.TarInfo(name)
-            info.size, info.mode, info.mtime = len(data), 0o755, 0
-            tar.addfile(info, io.BytesIO(data))
+            for filename, content, mode in [(name, data, 0o755), ("LICENSE", license_data, 0o644)]:
+                info = tarfile.TarInfo(filename)
+                info.size, info.mode, info.mtime = len(content), mode, 0
+                tar.addfile(info, io.BytesIO(content))
     binary.unlink()
     digest = hashlib.sha256(archive.read_bytes()).hexdigest()
     checksums.append(f"{digest}  {archive.name}\n")

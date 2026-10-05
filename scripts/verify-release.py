@@ -18,9 +18,11 @@ for line in entries:
     assert hashlib.sha256(path.read_bytes()).hexdigest() == digest, f"Checksum failed: {name}"
     if name.endswith(".zip"):
         with zipfile.ZipFile(path) as archive:
-            assert archive.namelist() == ["letsgen.exe"], "Unexpected Windows archive content"
+            assert archive.namelist() == ["letsgen.exe", "LICENSE"], "Unexpected Windows archive content"
+            assert archive.read("LICENSE") == Path("LICENSE").read_bytes(), "Incorrect release license"
     else:
         with tarfile.open(path) as archive:
             entries = archive.getmembers()
-            assert len(entries) == 1 and entries[0].name == "letsgen" and entries[0].isfile(), "Unsafe archive content"
+            assert [entry.name for entry in entries] == ["letsgen", "LICENSE"] and all(entry.isfile() for entry in entries), "Unsafe archive content"
+            assert archive.extractfile("LICENSE").read() == Path("LICENSE").read_bytes(), "Incorrect release license"
     print("Verified", name)

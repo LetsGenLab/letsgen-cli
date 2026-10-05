@@ -38,6 +38,7 @@ if name=='checksums.txt' and os.environ.get('TEST_BAD_CHECKSUM'):
     subprocess.run(["sh", str(root / "install.sh")], env=env, check=True, capture_output=True, text=True, timeout=30)
     actual = subprocess.check_output([str(temp / "installed" / "letsgen"), "version"], text=True).strip()
     assert actual == version, f"Wrong installed version: {actual}"
+    assert (temp / "installed" / "letsgen.LICENSE").read_bytes() == (root / "LICENSE").read_bytes(), "Missing license notice"
     env.update(LETSGEN_INSTALL_DIR=str(temp / "rejected"), TEST_BAD_CHECKSUM="1")
     failed = subprocess.run(["sh", str(root / "install.sh")], env=env, capture_output=True, text=True, timeout=30)
     assert failed.returncode != 0 and not (temp / "rejected" / "letsgen").exists(), "Checksum mismatch was installed"
