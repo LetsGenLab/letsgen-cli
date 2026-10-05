@@ -104,7 +104,7 @@ push a semver tag such as `v0.1.0` on that commit. The release workflow verifies
 that the tagged commit belongs to `main`, runs tests, builds all six archives,
 checks their contents/checksums, and publishes a GitHub release with installers.
 Prerelease tags produce prereleases. Pushing a branch without a tag runs CI
-without publishing. Select the source license before the first public release.
+without publishing. Source is licensed under [MIT](LICENSE).
 
 After publication, download and inspect `install.sh` (macOS/Linux) or
 `install.ps1` (Windows) from the reviewed tag. Both fetch version-pinned GitHub
