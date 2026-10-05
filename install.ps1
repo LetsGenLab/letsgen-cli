@@ -1,5 +1,5 @@
 param(
-  [string]$Version = 'v0.1.0',
+  [string]$Version = 'v0.1.0-alpha.1',
   [string]$InstallDir = (Join-Path $env:LOCALAPPDATA 'Programs\LetsGen')
 )
 $ErrorActionPreference = 'Stop'

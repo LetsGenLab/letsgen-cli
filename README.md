@@ -1,114 +1,286 @@
 # Lets Gen CLI
 
-A small Go client for the Lets Gen public API. No Node.js, agent runtime or
-provider credentials are needed. The server owns authorization, moderation,
-pricing, Gem reservations and generation. Canvas can call the same executable
-in a future integration.
+Make images, videos, and audio with [Lets Gen](https://letsgen.app), from your terminal.
 
-This is a **local v0.1.0 preview**, prepared for review before publication at
-`LetsGenLab/letsgen-cli`. Source, tags, archives and installers have not been
-published. The preview defaults to `https://letsgen.app`.
+Describe what you want, pick a model, and get the result as a link or a file
+saved to your computer. Install one executable and sign in through your
+browser. No Go, Python, Node.js, or API key to copy and paste.
 
-## Build and try
+**Preview:** v0.1.0-alpha.1 uses
+[letsgen.app](https://letsgen.app). You need production access.
 
 ```sh
-go build -trimpath -ldflags '-s -w' -o bin/letsgen ./cmd/letsgen
-./bin/letsgen help
-./bin/letsgen auth login
-./bin/letsgen --json models list --kind image
-./bin/letsgen models inspect letsgen-art
-./bin/letsgen generate image --model letsgen-art --prompt 'An adult adventurer' --dry-run
+letsgen auth login
+letsgen models list --kind image
+letsgen generate image --model MODEL_ID --prompt 'A red fox in the snow' --max-gems 10
 ```
 
-Browser login requires the additive CLI login support in the main Worker.
-It opens a consent page, offers a monthly cap/read-only access, and stores a
-30-day personal key. `auth logout` revokes it. For remote terminals use
-`auth login --api-key` (hidden prompt or stdin); browser login offers
-`--no-browser` when the browser can reach this terminal's loopback listener.
-Device login and refresh tokens are not included.
+Replace `MODEL_ID` with an ID from the model list.
 
-For automation set `LETSGEN_API_KEY` securely in the environment. Never pass
-keys as arguments. Credentials are separated by API origin and stored in the
-user config directory (`LETSGEN_CONFIG_DIR` overrides it). Files use mode 0600
-and directories 0700 on Unix; Windows uses the user's filesystem ACLs.
+## What you can do
 
-## Generate, recover, download
+- **Make images, videos, and audio.** Choose a model and describe the result.
+- **Use your own images as references.** Upload a file once and reuse its asset ID.
+- **Discover models and voices.** See available models and their supported settings.
+- **Keep the results.** Download finished outputs straight into a folder.
+- **Follow your jobs.** Check a task, wait for completion, or recover an interrupted request.
+- **Use it from scripts and agents.** Get JSON output and preview requests without spending Gems.
 
-Generation spends real Gems, including in production. Obtain spending approval
-before executing these examples. `--max-gems` is a per-request admission
-limit; the consented key cap covers outstanding reservations and settled
-charges across the UTC calendar month.
+## Contents
+
+- [Install](#install) — [macOS and Linux](#macos-and-linux) ·
+  [Windows](#windows) · [Manual download](#manual-download) · [Upgrading](#upgrading)
+- [Getting started](#getting-started)
+- [Generating images, video, and audio](#generating-images-video-and-audio)
+- [Finding models and voices](#finding-models-and-voices)
+- [Jobs and uploads](#jobs-and-uploads)
+- [Scripting and agents](#scripting-and-agents)
+- [Uninstall](#uninstall)
+- [Support](#support) · [License](#license)
+
+## Install
+
+### macOS and Linux
+
+Copy and paste into your terminal:
 
 ```sh
-letsgen assets upload ./reference.png
-letsgen --json generate image --model letsgen-art --prompt 'An adult adventurer' \
-  --parameters '{"ratio":"1:1"}' --reference asset_OWNED --max-gems 10 --async
-letsgen requests list
-letsgen requests retry REQUEST_ID --async
+curl -fsSL https://github.com/LetsGenLab/letsgen-cli/releases/download/v0.1.0-alpha.1/install.sh | sh
+export PATH="$HOME/.local/bin:$PATH"
+letsgen version
+```
+
+The installer chooses the right download, verifies its SHA-256 checksum, and
+installs to `~/.local/bin`. No administrator access is needed.
+The PATH command applies to this terminal. Add the same `export PATH` line
+to your shell profile to use `letsgen` in new terminals.
+
+To choose another install directory:
+
+```sh
+curl -fsSL https://github.com/LetsGenLab/letsgen-cli/releases/download/v0.1.0-alpha.1/install.sh \
+  | LETSGEN_INSTALL_DIR="$HOME/bin" sh
+```
+
+### Windows
+
+Copy and paste into PowerShell:
+
+```powershell
+irm https://github.com/LetsGenLab/letsgen-cli/releases/download/v0.1.0-alpha.1/install.ps1 | iex
+$env:Path = "$env:LOCALAPPDATA\Programs\LetsGen;$env:Path"
+letsgen version
+```
+
+Installs to `%LOCALAPPDATA%\Programs\LetsGen` without administrator access.
+The PATH command applies to this terminal. To use `letsgen` in new terminals,
+add that directory to your user Path in Windows Environment Variables.
+Native Windows execution has not yet been verified.
+
+### Manual download
+
+Download your archive from the
+[release page](https://github.com/LetsGenLab/letsgen-cli/releases/tag/v0.1.0-alpha.1),
+extract it, and put `letsgen` (or `letsgen.exe`) in a directory on your PATH.
+
+| Platform | Archive |
+| --- | --- |
+| macOS, Apple silicon | `letsgen_v0.1.0-alpha.1_darwin_arm64.tar.gz` |
+| macOS, Intel | `letsgen_v0.1.0-alpha.1_darwin_amd64.tar.gz` |
+| Linux, x86-64 | `letsgen_v0.1.0-alpha.1_linux_amd64.tar.gz` |
+| Linux, arm64 | `letsgen_v0.1.0-alpha.1_linux_arm64.tar.gz` |
+| Windows, x86-64 | `letsgen_v0.1.0-alpha.1_windows_amd64.zip` |
+| Windows, arm64 | `letsgen_v0.1.0-alpha.1_windows_arm64.zip` |
+
+The release includes `checksums.txt` for verifying manual downloads.
+The installers verify checksums automatically.
+
+### Upgrading
+
+Run the installer from the new release again. It replaces the existing
+executable in the same directory.
+
+## Getting started
+
+```sh
+letsgen auth login                  # opens your browser
+letsgen auth status                 # checks access, scopes, and Gem usage
+```
+
+Approve access in your browser. You can choose read-only access and a monthly
+Gem limit. Login saves a 30-day personal API key for you. Sign in again when
+it expires; `auth logout` revokes it and removes the local credential.
+
+```sh
+# browse without uploading or generating
+letsgen auth login --read-only
+
+# choose a monthly Gem limit; 0 disables spending
+letsgen auth login --monthly-gem-cap 100
+letsgen auth login --monthly-gem-cap 0
+
+# remote terminal: enter an API key at the hidden prompt
+letsgen auth login --api-key
+```
+
+`--no-browser` prints the login URL instead of opening it. The browser must
+be able to reach this terminal's loopback address.
+
+## Generating images, video, and audio
+
+Generation spends real Gems, including in production. Set `--max-gems` to the
+most you want to spend on each request. Your monthly key limit also applies.
+
+```sh
+# text to image
+letsgen generate image --model MODEL_ID --prompt 'A red fox in the snow' --max-gems 10
+
+# save the result to a folder
+letsgen generate image --model MODEL_ID --prompt 'A neon city' --max-gems 10 --output ./out
+
+# model-specific image settings
+letsgen generate image --model MODEL_ID --prompt 'A mountain lake' \
+  --parameters '{"ratio":"1:1"}' --max-gems 10
+
+# text to video
+letsgen generate video --model MODEL_ID --prompt 'A paper boat drifting in the rain' \
+  --max-gems 50 --async
+
+# speech: choose an authorized VOICE_ID from voices list
+letsgen generate audio --model letsgen-voice --operation speech --prompt 'Hello' \
+  --parameters '{"voiceProfileId":"VOICE_ID"}' --max-gems 10 --output ./out
+```
+
+Choose a model that supports the media type and parameters.
+Audio also supports `--operation music` and `--operation voice_clone`.
+
+Each command waits for completion and prints the result, with a default
+timeout of 10 minutes. `--timeout 20m` changes the wait.
+`--async` submits and returns a task immediately; use `tasks wait` to collect
+it later. A timeout does not cancel the server task.
+
+## Finding models and voices
+
+```sh
+letsgen models list --kind image    # image models
+letsgen models list --kind video    # video models
+letsgen models list --kind audio    # audio models
+letsgen models inspect MODEL_ID     # supported settings and metadata
+
+letsgen voices list --scope mine
+letsgen voices list --scope explore --language en
+```
+
+Model IDs come from the current catalog. Inspect a model before choosing
+settings. Some models have incomplete parameter details; `baseGems` is a
+base price, not an exact cost quote.
+
+## Jobs and uploads
+
+```sh
+# check a job, wait for completion, and save its outputs
 letsgen tasks get TASK_ID
 letsgen tasks wait TASK_ID --timeout 10m
 letsgen tasks download TASK_ID --output ./out
-letsgen voices list --scope explore
-letsgen generate audio --model letsgen-voice --operation speech --prompt 'Hello' \
-  --parameters '{"voiceProfileId":"voice_OWNED"}' --max-gems 10 --dry-run
+
+# upload a reference image; copy the returned asset ID
+letsgen assets upload ./reference.png
+
+# use that image in a generation
+letsgen generate image --model MODEL_ID --prompt 'Make this scene snowy' \
+  --reference ASSET_ID --max-gems 10 --output ./out
+
+# recover a submission interrupted before it returned a task ID
+letsgen requests list
+letsgen requests retry REQUEST_ID --async
 ```
 
-Every submission persists its request ID **before** the POST. Ambiguous
-responses are never automatically resubmitted with a fresh ID. `requests retry`
-reuses the exact body, original origin and original credential. A known task
-is read instead of submitted again. A timeout returns its current task on
-stdout and recovery guidance on stderr; the server keeps processing.
+Replace `TASK_ID`, `ASSET_ID`, and `REQUEST_ID` with IDs from the corresponding
+command output. Repeat `--reference` to supply multiple images.
 
-Default generation waits up to 10 minutes. `--async` returns after submission;
-`--output DIR` downloads successful outputs after waiting. Partial tasks retain
-their partial status. Downloading refreshes task URLs and never regenerates or
-overwrites existing files. Output download is bounded to 512 MB per file and
-uses a separate client without credentials. API and media redirects are rejected.
+Downloading never creates another generation or overwrites existing files.
+A partial task may still have completed outputs. Request recovery reuses the
+saved request identity, original payload, API origin, and credential.
 
-`--dry-run` prints the request without network calls, uploads, spending, or
-saved request writes. Model capabilities come from the server. Some models
-lack complete parameter schemas and video availability; baseGems is not an
-exact quote. `models inspect` prints available authoritative metadata rather
-than inventing missing fields. Text/extractor generation, voice-reference
-creation, device auth, Homebrew and npm wrappers are outside this preview.
+## Scripting and agents
 
-`--json` keeps stdout as JSON; progress/errors go to stderr. Exit codes:
-0 success, 1 request/local failure, 2 usage, 3 authentication/access,
-4 timeout/interruption, 5 failed task/no downloadable outputs.
-
-## Agent skills
+- **`--json`** returns machine-readable output on stdout. Progress and errors go to stderr.
+- **`--dry-run`** previews a generation request without API calls, uploads, or spending.
+- **`--async`** submits generation and returns its task without waiting.
 
 ```sh
+# rehearse a generation without spending
+letsgen --json generate image --model MODEL_ID --prompt 'A red fox' --dry-run
+
+# inspect models and jobs as JSON
+letsgen --json models list --kind image
+letsgen --json tasks get TASK_ID
+
+# read or install the bundled agent instructions
 letsgen skills list
 letsgen skills show
 letsgen skills install --target codex
 letsgen skills install --target claude
 ```
 
-The versioned skill is embedded in the binary. Installation refuses to
-overwrite an existing skill. `--path DIR` selects another agent skill root.
+Agents must obtain a numeric budget and explicit permission before paid
+generation, then use `--max-gems` on each approved request. Recover uncertain
+submissions with `requests retry` instead of starting a new request.
 
-## Release preparation
+For automation, provide `LETSGEN_API_KEY` securely in the environment. It
+overrides saved credentials; never put a key in command arguments.
+`LETSGEN_CONFIG_DIR` overrides credential and request storage.
+`--origin URL` or `LETSGEN_API_ORIGIN` selects an API environment.
+Credentials are stored separately for each origin.
+
+Commands exit nonzero on failure: 1 request/local error, 2 invalid usage,
+3 authentication/access, 4 timeout/interruption, 5 failed task/no outputs.
+
+Run `letsgen help` for the full command list.
+
+## Uninstall
+
+First revoke your saved credential:
 
 ```sh
-go test -race ./...
-go vet ./...
-python3 scripts/release.py v0.1.0
+letsgen auth logout
 ```
 
-This builds macOS/Linux/Windows amd64 and arm64 archives, `checksums.txt`, and
-`source.txt` locally. The script never tags, pushes or publishes anything.
-Development defaults to `develop`. GitHub CI checks pushes and PRs against
-`develop` and `main`. After review, merge the approved version into `main` and
-push a semver tag such as `v0.1.0` on that commit. The release workflow verifies
-that the tagged commit belongs to `main`, runs tests, builds all six archives,
-checks their contents/checksums, and publishes a GitHub release with installers.
-Prerelease tags produce prereleases. Pushing a branch without a tag runs CI
-without publishing. Source is licensed under [MIT](LICENSE).
+On macOS and Linux, remove the default installation:
 
-After publication, download and inspect `install.sh` (macOS/Linux) or
-`install.ps1` (Windows) from the reviewed tag. Both fetch version-pinned GitHub
-archives and verify SHA-256 before installing. The Unix default is
-`~/.local/bin`; override `LETSGEN_INSTALL_DIR` and `LETSGEN_VERSION` as needed.
-Windows accepts `-Version` and `-InstallDir`. Checksum verification protects
-against corrupt downloads; signed releases are a future improvement.
+```sh
+rm "$HOME/.local/bin/letsgen" "$HOME/.local/bin/letsgen.LICENSE"
+```
+
+To also remove saved request history and configuration:
+
+```sh
+# macOS
+rm -rf "$HOME/Library/Application Support/letsgen"
+
+# Linux
+rm -rf "${XDG_CONFIG_HOME:-$HOME/.config}/letsgen"
+```
+
+On Windows, after signing out, run in PowerShell:
+
+```powershell
+Remove-Item "$env:LOCALAPPDATA\Programs\LetsGen" -Recurse
+Remove-Item "$env:APPDATA\letsgen" -Recurse
+```
+
+Remove the install directory from your PATH. If you chose custom install or
+configuration directories, remove those instead.
+
+## Support
+
+Bugs and feature requests: [open an issue](https://github.com/LetsGenLab/letsgen-cli/issues).
+
+Include the output of `letsgen version` and the command that failed.
+Do not include credentials.
+
+## License
+
+[MIT](LICENSE).
+
+Contributors: [development.md](development.md).

@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-version=${LETSGEN_VERSION:-v0.1.0}
+version=${LETSGEN_VERSION:-v0.1.0-alpha.1}
 install_dir=${LETSGEN_INSTALL_DIR:-"$HOME/.local/bin"}
 case "$version" in v[0-9]*.[0-9]*.[0-9]*) ;; *) echo 'Invalid LETSGEN_VERSION' >&2; exit 1 ;; esac
 case "$version" in *[!a-zA-Z0-9.-]*) echo 'Invalid LETSGEN_VERSION' >&2; exit 1 ;; esac

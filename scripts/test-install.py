@@ -8,7 +8,7 @@ import sys
 import tempfile
 
 root = Path(__file__).resolve().parents[1]
-version = sys.argv[1] if len(sys.argv) > 1 else "v0.1.0"
+version = sys.argv[1] if len(sys.argv) > 1 else "v0.1.0-alpha.1"
 os_name = {"Darwin": "darwin", "Linux": "linux"}[platform.system()]
 arch = {"arm64": "arm64", "aarch64": "arm64", "x86_64": "amd64", "AMD64": "amd64"}[platform.machine()]
 archive = f"letsgen_{version}_{os_name}_{arch}.tar.gz"
