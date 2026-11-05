@@ -8,9 +8,6 @@ browser. No Go, Python, Node.js, or API key to copy and paste.
 
 The CLI connects to [letsgen.app](https://letsgen.app) by default.
 
-Release downloads are not available yet. The installation instructions below
-are for the upcoming first release.
-
 ```sh
 letsgen auth login
 letsgen models list --kind image
@@ -47,7 +44,7 @@ Replace `MODEL_ID` with an ID from the model list.
 Copy and paste into your terminal:
 
 ```sh
-curl -fsSL https://github.com/LetsGenLab/letsgen-cli/releases/download/v0.1.0-alpha.1/install.sh | sh
+curl -fsSL https://github.com/LetsGenLab/letsgen-cli/releases/download/v0.1.0/install.sh | sh
 export PATH="$HOME/.local/bin:$PATH"
 letsgen version
 ```
@@ -60,7 +57,7 @@ to your shell profile to use `letsgen` in new terminals.
 To choose another install directory:
 
 ```sh
-curl -fsSL https://github.com/LetsGenLab/letsgen-cli/releases/download/v0.1.0-alpha.1/install.sh \
+curl -fsSL https://github.com/LetsGenLab/letsgen-cli/releases/download/v0.1.0/install.sh \
   | LETSGEN_INSTALL_DIR="$HOME/bin" sh
 ```
 
@@ -69,7 +66,7 @@ curl -fsSL https://github.com/LetsGenLab/letsgen-cli/releases/download/v0.1.0-al
 Copy and paste into PowerShell:
 
 ```powershell
-irm https://github.com/LetsGenLab/letsgen-cli/releases/download/v0.1.0-alpha.1/install.ps1 | iex
+irm https://github.com/LetsGenLab/letsgen-cli/releases/download/v0.1.0/install.ps1 | iex
 $env:Path = "$env:LOCALAPPDATA\Programs\LetsGen;$env:Path"
 letsgen version
 ```
@@ -82,17 +79,17 @@ Native Windows execution has not yet been verified.
 ### Manual download
 
 Download your archive from the
-[release page](https://github.com/LetsGenLab/letsgen-cli/releases/tag/v0.1.0-alpha.1),
+[release page](https://github.com/LetsGenLab/letsgen-cli/releases/tag/v0.1.0),
 extract it, and put `letsgen` (or `letsgen.exe`) in a directory on your PATH.
 
 | Platform | Archive |
 | --- | --- |
-| macOS, Apple silicon | `letsgen_v0.1.0-alpha.1_darwin_arm64.tar.gz` |
-| macOS, Intel | `letsgen_v0.1.0-alpha.1_darwin_amd64.tar.gz` |
-| Linux, x86-64 | `letsgen_v0.1.0-alpha.1_linux_amd64.tar.gz` |
-| Linux, arm64 | `letsgen_v0.1.0-alpha.1_linux_arm64.tar.gz` |
-| Windows, x86-64 | `letsgen_v0.1.0-alpha.1_windows_amd64.zip` |
-| Windows, arm64 | `letsgen_v0.1.0-alpha.1_windows_arm64.zip` |
+| macOS, Apple silicon | `letsgen_v0.1.0_darwin_arm64.tar.gz` |
+| macOS, Intel | `letsgen_v0.1.0_darwin_amd64.tar.gz` |
+| Linux, x86-64 | `letsgen_v0.1.0_linux_amd64.tar.gz` |
+| Linux, arm64 | `letsgen_v0.1.0_linux_arm64.tar.gz` |
+| Windows, x86-64 | `letsgen_v0.1.0_windows_amd64.zip` |
+| Windows, arm64 | `letsgen_v0.1.0_windows_arm64.zip` |
 
 The release includes `checksums.txt` for verifying manual downloads.
 The installers verify checksums automatically.

@@ -26,9 +26,9 @@ the selected environment.
 ```sh
 go test -race ./...
 go vet ./...
-python3 scripts/release.py v0.1.0-alpha.1
-python3 scripts/verify-release.py dist/v0.1.0-alpha.1
-python3 scripts/test-install.py v0.1.0-alpha.1
+python3 scripts/release.py v0.1.0
+python3 scripts/verify-release.py dist/v0.1.0
+python3 scripts/test-install.py v0.1.0
 ```
 
 Release preparation produces macOS/Linux/Windows amd64 and arm64 archives,
